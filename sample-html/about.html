@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sample Website - About</title>
+    <style>
+      /* Same CSS as index.html */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        line-height: 1.6;
+        color: #333;
+        background-color: #f9f9f9;
+      }
+
+      nav {
+        background-color: #2c3e50;
+        padding: 1rem 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .nav-container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+      }
+
+      .nav-links li {
+        margin-left: 2rem;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .nav-links a:hover {
+        color: #3498db;
+      }
+
+      .nav-links a.active {
+        color: #3498db;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 5px;
+      }
+
+      main {
+        width: 90%;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #ecf0f1;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+
+      footer {
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 1.5rem 0;
+        margin-top: 3rem;
+      }
+
+      @media (max-width: 768px) {
+        .nav-container {
+          flex-direction: column;
+        }
+
+        .logo {
+          margin-bottom: 1rem;
+        }
+
+        .nav-links {
+          width: 100%;
+          justify-content: space-around;
+        }
+
+        .nav-links li {
+          margin-left: 0;
+        }
+
+        main {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation - Shared across all pages -->
+    <nav>
+      <div class="nav-container">
+        <div class="logo">SampleSite</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html" class="active">About</a></li>
+          <li><a href="product.html">Product</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content - About Page -->
+    <main>
+      <h1>About Us</h1>
+      <p>
+        We are a sample company dedicated to creating amazing web experiences.
+      </p>
+      <p>
+        Our mission is to provide high-quality web solutions that help
+        businesses grow and succeed in the digital world.
+      </p>
+      <p>
+        Founded in 2020, we have worked with numerous clients to create
+        beautiful, functional websites that meet their unique needs.
+      </p>
+      <p>
+        Our team consists of experienced developers, designers, and project
+        managers who are passionate about what they do.
+      </p>
+    </main>
+
+    <footer>
+      <p>&copy; 2023 Sample Website. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
