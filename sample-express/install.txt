@@ -1,0 +1,26 @@
+1. npm init -y
+2. npm i express dotenv 
+3. npm i typescript ts-node @types/node @types/express nodemon eslint prettier --save-dev
+4. npm i jest supertest ts-jest @types/jest @types/supertest --save-dev
+5. npx tsc --init
+6. npx ts-jest config:init
+
+
+In tsconfig.json,
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
+
+- npx tsc --build
+- node ./dist/index.js

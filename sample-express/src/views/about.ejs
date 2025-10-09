@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include("includes/head") %>
+    <link rel="stylesheet" href="/css/specific.css" />
+  </head>
+  <body>
+    <%- include("includes/nav") %>
+    <main>
+      <h1><%= title %></h1>
+      <ul>
+        <% users.forEach(user => { %>
+        <li>Name - <%= user.name %> : Age - <%= user.age %></li>
+        <% }) %>
+      </ul>
+    </main>
+  </body>
+</html>
