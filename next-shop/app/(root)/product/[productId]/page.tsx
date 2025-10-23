@@ -4,21 +4,22 @@
 //   params: Promise<{ productId: string }>;
 
 // }) {
-"use client";
+// "use client";
 
-import { notFound, useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 // import { use } from "react";
 
-// function ProductDetail(props: PageProps<"/product/[productId]">) {
-function ProductDetail() {
-  // const { productId } = await props.params;
+async function ProductDetail(props: PageProps<"/product/[productId]">) {
+  const { productId } = await props.params;
   // const { productId } = use(props.params);
-  const { productId } = useParams<{ productId: string }>();
+  // const { productId } = useParams<{ productId: string }>();
 
   // Just testing
   if (parseInt(productId) > 100) {
     notFound();
   }
+
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   return (
     <>
