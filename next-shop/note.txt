@@ -1,0 +1,7 @@
+Data Fetching 
+    1. In Server Component
+    2. In Client Component
+
+Data Fetching In Server Component
+    1. Fetch API ( Using Next JS as Frontend )
+    2. Prisma ORM ( Using Next JS as FullStack )
