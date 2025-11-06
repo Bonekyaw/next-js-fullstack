@@ -1,0 +1,24 @@
+{
+  "posts": [
+    { "id": "1", "title": "Hello World", "author": "Alice", "views": 100 },
+    { "id": "2", "title": "JSON API Basics", "author": "Bob", "view": 200 },
+    {
+      "id": "3",
+      "title": "Advanced JSON API",
+      "author": "Charlie",
+      "views": 300
+    },
+    {
+      "id": "4",
+      "title": "Understanding REST",
+      "author": "Diana",
+      "views": 150
+    },
+    {
+      "id": "5",
+      "title": "API Design Principles",
+      "author": "Eve",
+      "views": 250
+    }
+  ]
+}
