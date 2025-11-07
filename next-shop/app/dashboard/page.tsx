@@ -3,6 +3,7 @@ import Link from "next/link";
 import UserProfile from "@/components/dashboard/userProfile";
 import Statistics from "@/components/dashboard/statistics";
 import RecentActivity from "@/components/dashboard/recentActivity";
+import { refreshPostsCache } from "../actions/post";
 
 export default function Dashboard() {
   return (
@@ -11,6 +12,16 @@ export default function Dashboard() {
       <Link href="/" className="text-blue-500 underline">
         Go Home
       </Link>
+      {/* Creating a new post and revalidate */}
+      <form action={refreshPostsCache}>
+        <p>Create a new post and revalidate</p>
+        <button
+          type="submit"
+          className="rounded-full bg-sky-400 px-6 py-2 text-white"
+        >
+          Refresh Posts Cache
+        </button>
+      </form>
       <p className="mb-8 text-gray-600">
         This page loads immediately while components stream in
       </p>

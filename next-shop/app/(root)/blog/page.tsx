@@ -6,9 +6,13 @@ interface Post {
 }
 async function BlogList() {
   await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate delay
-  const response = await fetch("http://localhost:4000/posts", {
-    // next: { revalidate: 3600 },
-    cache: "no-store",
+  const response = await fetch("http://localhost:4000/posts?search=auth", {
+    // next: {
+    //   // revalidate: 3600, // Time-based Revalidation
+    //   tags: ["posts"], // On-demand Revalidation
+    // },
+    // cache: "no-store",
+    cache: "force-cache",
   });
   if (!response.ok) {
     throw new Error("Failed to fetch posts");
