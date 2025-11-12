@@ -5,3 +5,7 @@ Data Fetching
 Data Fetching In Server Component
     1. Fetch API ( Using Next JS as Frontend )
     2. Prisma ORM ( Using Next JS as FullStack )
+
+Data Detching In Client Component
+    1. React "use" hook
+    2. Tanstack Query or RTK query or SWR
