@@ -9,3 +9,5 @@ Data Fetching In Server Component
 Data Detching In Client Component
     1. React "use" hook
     2. Tanstack Query or RTK query or SWR
+
+Super Bonus : Hybrid Data Fetching

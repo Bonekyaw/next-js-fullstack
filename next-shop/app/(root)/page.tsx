@@ -26,6 +26,7 @@ export default function Home() {
       </h1>
       <Link href="/login">Go to Login</Link>
       <Link href="/blog">Go to Blog Page</Link>
+      <Link href="/posts">Go to Post Page</Link>
       <div className="min-h-screen flex-1">Testing for Prefetching</div>
       <div className="min-h-screen flex-1">Using Link</div>
       <Link href="/product">Go to Product</Link>

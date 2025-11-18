@@ -2,7 +2,7 @@ import UserList from "@/components/userList";
 import prisma from "@/lib/prisma";
 import { Suspense } from "react";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 async function getUsers() {
   return prisma.user.findMany();
