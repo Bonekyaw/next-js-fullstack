@@ -1,4 +1,4 @@
-import Link from "next/link";
+import PostHybrid from "@/components/postHybrid";
 
 async function PostPage() {
   const response = await fetch(process.env.API_URL + "/posts");
@@ -11,13 +11,7 @@ async function PostPage() {
   return (
     <>
       <h1>post List page</h1>
-      {posts.map((post) => (
-        <li key={post.id}>
-          <Link href={`/posts/${post.id}`}>
-            {post.title} - {post.views}
-          </Link>
-        </li>
-      ))}
+      <PostHybrid initialData={posts} />
     </>
   );
 }

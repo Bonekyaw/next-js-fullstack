@@ -1,4 +1,5 @@
-import PostClient from "@/components/postClient";
+// import PostClient from "@/components/postClient";
+import PostSWR from "@/components/postSWR";
 
 async function PostDetailPage({
   params,
@@ -9,7 +10,7 @@ async function PostDetailPage({
   return (
     <>
       <div>PostDetail</div>
-      <PostClient postId={pid} />
+      <PostSWR postId={pid} />
     </>
   );
 }
