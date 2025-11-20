@@ -1,24 +1,35 @@
 {
   "posts": [
-    { "id": "1", "title": "Hello World", "author": "Alice", "views": 100 },
-    { "id": "2", "title": "JSON API Basics", "author": "Bob", "view": 200 },
+    {
+      "id": "1",
+      "title": "Hello World 123456",
+      "authorId": "1",
+      "views": 100
+    },
+    { "id": "2", "title": "JSON API Basics", "authorId": "3", "view": 200 },
     {
       "id": "3",
       "title": "Advanced JSON API",
-      "author": "Charlie",
+      "authorId": "2",
       "views": 300
     },
     {
       "id": "4",
       "title": "Understanding REST",
-      "author": "Diana",
+      "authorId": "2",
       "views": 150
     },
     {
       "id": "5",
       "title": "API Design Principles",
-      "author": "Eve",
+      "authorId": "1",
       "views": 250
     }
+  ],
+  "users": [
+    { "id": "1", "name": "Alice", "email": "alice@g.com" },
+    { "id": "2", "name": "Bob", "email": "bob@g.com" },
+    { "id": "3", "name": "Charlie", "email": "char@g.com" },
+    { "id": "4", "name": "Diana", "email": "diana@g.com" }
   ]
 }
