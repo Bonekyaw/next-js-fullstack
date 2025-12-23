@@ -11,3 +11,8 @@ Data Detching In Client Component
     2. Tanstack Query or RTK query or SWR
 
 Super Bonus : Hybrid Data Fetching
+
+Data-Fetching Pattern
+    1. Sequential 
+    2. Parallel
+    3. Preload
