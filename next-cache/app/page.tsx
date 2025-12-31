@@ -1,5 +1,7 @@
-import { Suspense } from "react";
+// import { Suspense } from "react";
+import Link from "next/link";
 import UserList from "./ui/user-list";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -7,9 +9,14 @@ export default function Home() {
       <h1 className="text-2xl text-black mb-2 bg-amber-300">
         This is a part of the static shell
       </h1>
-      <Suspense fallback={<p>Loading user list...</p>}>
+      <Link href="/posts">
+        <Button>Go Post</Button>
+      </Link>
+
+      {/* <Suspense fallback={<p>Loading user list...</p>}>
         <UserList />
-      </Suspense>
+      </Suspense> */}
+      <UserList />
     </div>
   );
 }

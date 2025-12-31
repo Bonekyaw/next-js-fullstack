@@ -1,8 +1,11 @@
 import prisma from "@/lib/prisma";
-import { connection } from "next/server";
+import { cacheLife } from "next/cache";
+// import { connection } from "next/server";
 
 async function UserList() {
-  await connection();
+  // await connection();
+  "use cache";
+  cacheLife({ stale: 120, revalidate: 180 });
 
   const users = await prisma.user.findMany();
   return (
