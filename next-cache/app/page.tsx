@@ -1,5 +1,6 @@
 // import { Suspense } from "react";
-import Link from "next/link";
+// import Link from "next/link";
+import Link from "./ui/link";
 import UserList from "./ui/user-list";
 import { Button } from "@/components/ui/button";
 

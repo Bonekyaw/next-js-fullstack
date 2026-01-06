@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import prisma from "@/lib/prisma";
+import { revalidatePath, revalidateTag, updateTag } from "next/cache";
 
 export type State = {
   errors?: {
@@ -63,5 +64,15 @@ export async function createPostAction(
     };
   }
 
+  // revalidatePath("/posts");
+  revalidateTag("posts", "max");
+  // updateTag("posts");
   redirect("/posts");
 }
+
+// revalidatePath - revalidating specific pages or layout
+
+// revalidateTag - revalidating data in server action and route handler
+// updateTag - revalidating data in server action only
+
+// cacheTag
