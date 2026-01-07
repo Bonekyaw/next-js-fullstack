@@ -6,14 +6,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cacheLife, cacheTag } from "next/cache";
+import { getPosts } from "../utils/getPosts";
+// import { cacheLife, cacheTag } from "next/cache";
 
 async function PostList() {
-  "use cache";
+  // "use cache";
   // cacheLife("hours");
-  cacheTag("posts");
+  // cacheTag("posts");
 
-  const posts = await prisma.post.findMany();
+  // const posts = await prisma.post.findMany();
+
+  const posts = await getPosts();
+
   return (
     <>
       {posts.map((post) => (

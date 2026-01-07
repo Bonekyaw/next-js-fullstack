@@ -65,8 +65,8 @@ export async function createPostAction(
   }
 
   // revalidatePath("/posts");
-  revalidateTag("posts", "max");
-  // updateTag("posts");
+  // revalidateTag("posts", "max");
+  updateTag("posts");
   redirect("/posts");
 }
 
