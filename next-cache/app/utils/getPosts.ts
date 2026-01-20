@@ -10,3 +10,11 @@ export async function getPosts() {
 
   return prisma.post.findMany();
 }
+
+export async function getPost(id: number) {
+  // cacheLife("hours")
+  cacheTag("posts", `post-${id}`);
+  console.log("GetPost API calling ----");
+
+  return prisma.post.findUnique({ where: { id } });
+}

@@ -4,6 +4,7 @@ import Link from "./ui/link";
 import UserList from "./ui/user-list";
 import { Button } from "@/components/ui/button";
 import { getPosts } from "./utils/getPosts";
+import { Suspense } from "react";
 
 export default async function Home() {
   const posts = await getPosts();
@@ -17,9 +18,9 @@ export default async function Home() {
         <Button>Go Post</Button>
       </Link>
 
-      {/* <Suspense fallback={<p>Loading user list...</p>}>
+      <Suspense fallback={<p>Loading user list...</p>}>
         <UserList />
-      </Suspense> */}
+      </Suspense>
       <UserList />
       {posts.map((post) => (
         <p key={post.id}>{post.title}</p>

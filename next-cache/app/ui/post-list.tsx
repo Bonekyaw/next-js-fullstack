@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getPosts } from "../utils/getPosts";
+import Link from "next/link";
 // import { cacheLife, cacheTag } from "next/cache";
 
 async function PostList() {
@@ -23,12 +24,14 @@ async function PostList() {
       {posts.map((post) => (
         <Card key={post.id} className="w-full max-w-sm mb-2">
           <CardHeader>
-            <CardTitle>
-              {post.title} -{" "}
-              <span className="text-sm">
-                {post.published ? "published" : "pending"}
-              </span>
-            </CardTitle>
+            <Link href={`/posts/${post.id}`}>
+              <CardTitle>
+                {post.title} -{" "}
+                <span className="text-sm">
+                  {post.published ? "published" : "pending"}
+                </span>
+              </CardTitle>
+            </Link>
           </CardHeader>
           <CardContent>
             <CardDescription>{post.content}</CardDescription>
