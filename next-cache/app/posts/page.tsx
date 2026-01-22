@@ -2,6 +2,13 @@ import { Button } from "@/components/ui/button";
 // import Link from "next/link";
 import PostList from "../ui/post-list";
 import Link from "../ui/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Posts",
+  description: "List of blog posts",
+  keywords: ["blog", "posts", "next.js"],
+};
 
 function Page() {
   return (

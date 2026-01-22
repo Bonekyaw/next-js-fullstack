@@ -7,6 +7,29 @@ export async function generateStaticParams() {
   })); // [{id: '1'}, {id: '2'}  ]
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const post = await getPost(Number(id));
+
+  if (!post) {
+    return {
+      title: "Post Not Found",
+      description: "The requested post could not be found.",
+    };
+  }
+
+  return {
+    title: {
+      absolute: post.title,
+    },
+    description: post.content?.slice(0, 160) || "Blog post detail page",
+  };
+}
+
 async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const post = await getPost(Number(id));
