@@ -1,0 +1,27 @@
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                           Authentication Architecture                           │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+    ┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
+    │  Client Side    │         │   API Route     │         │  Better Auth    │
+    │  auth-client.ts │ ──────▶ │ /api/auth/[...] │ ──────▶ │  lib/auth.ts    │
+    └─────────────────┘         └─────────────────┘         └────────┬────────┘
+           │                                                         │
+           │ exports:                                                │ features:
+           │ • signUp                                                │ • Google OAuth
+           │ • signIn                                                │ • Email OTP
+           │ • signOut                                               │ • Password validation
+           │ • emailOtp                                              │ • Email verification
+           │ • getSession                                            │ • Password reset ✅
+           │ • forgetPassword                                        │
+           │ • resetPassword                                         ▼
+           │                                                 ┌─────────────────┐
+           │                                                 │  Prisma + Neon  │
+           │                                                 │   PostgreSQL    │
+           └───────────────────────────────────────────────▶ └─────────────────┘
+                                                                     │
+                                                                     ▼
+                                                            ┌─────────────────┐
+                                                            │     Resend      │
+                                                            │  (Email Service)│
+                                                            └─────────────────┘

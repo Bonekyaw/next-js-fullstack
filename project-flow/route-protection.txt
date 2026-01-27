@@ -1,0 +1,20 @@
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              Route Groups & Protection                          │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  (auth) Route Group                        (shop) Route Group                   │
+│  └── layout.tsx                            └── layout.tsx                       │
+│      │                                         │                                │
+│      ├── AuthCheck Component                   ├── AuthCheck Component          │
+│      │   └── If user EXISTS                    │   └── If user NOT exists       │
+│      │       → redirect("/dashboard")          │       → redirect("/sign-in")   │
+│      │                                         │                                │
+│      ├── /sign-in          ✅ Exists           └── /products ✅ Protected       │
+│      ├── /sign-up          ✅ Exists                                            │
+│      ├── /verify-email     ✅ Exists                                            │
+│      ├── /forgot-password  ✅ Exists                                            │
+│      └── /reset-password   ✅ Exists                                            │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘

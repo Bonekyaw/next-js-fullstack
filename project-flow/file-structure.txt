@@ -1,0 +1,42 @@
+app/
+├── page.tsx                    # Landing page (/ route)
+├── layout.tsx                  # Root layout
+├── globals.css                 # Global styles
+│
+├── (auth)/                     # Auth route group (guests only)
+│   ├── layout.tsx              # Redirects logged-in users
+│   ├── sign-in/
+│   │   ├── page.tsx            
+│   │   └── sign-in-form.tsx    
+│   ├── sign-up/
+│   │   ├── page.tsx            
+│   │   └── sign-up-form.tsx    
+│   ├── verify-email/
+│   │   └── page.tsx            
+│   ├── forgot-password/
+│   │   └── page.tsx            
+│   └── reset-password/
+│       └── page.tsx            
+│
+├── (shop)/                     # Shop route group (authenticated)
+│   ├── layout.tsx               (Auth protection)
+│   └── products/
+│       └── page.tsx            
+│
+├── (admin)/
+│   └── dashboard/
+│       ├── page.tsx            
+│       ├── dashboard-content.tsx
+│       └── sign-out-button.tsx
+│
+└── api/
+    └── auth/
+        └── [...all]/
+            └── route.ts        ✅ Handles all auth endpoints
+
+lib/
+├── auth.ts                     # Better Auth config 
+├── auth-client.ts              # Client methods
+├── get-server-session.ts       # Server session helper
+├── email.ts                    # Resend email helper
+└── prisma.ts                   # Prisma client
