@@ -1,5 +1,6 @@
 import { CATEGORIES } from "@/lib/product-utils";
 import Link from "next/link";
+import UserNavigation from "./user-nav";
 
 export default function ShopHeader() {
   return (
@@ -26,7 +27,7 @@ export default function ShopHeader() {
           >
             Cart
           </Link>
-          <div>User Profile</div>
+          <UserNavigation />
         </div>
       </div>
     </header>
