@@ -11,7 +11,7 @@ interface SendEmailParams {
 export async function sendEmail({ to, subject, html }: SendEmailParams) {
   try {
     await resend.emails.send({
-      from: "onboarding@resend.dev", // no-reply@fashion.com
+      from: process.env.AUTH_EMAIL_FROM ?? "onboarding@resend.dev",
       to, // For testing, only email registered with Resend will receive emails
       subject,
       html,

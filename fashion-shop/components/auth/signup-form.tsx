@@ -2,6 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,8 +15,11 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { type RegisterInput, registerSchema } from "@/lib/validations/auth";
+import { signUp, emailOtp } from "@/lib/auth-client";
 
 export default function SignUpForm() {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -25,7 +30,38 @@ export default function SignUpForm() {
     },
   });
 
-  function onSubmit(data: RegisterInput) {}
+  function onSubmit(data: RegisterInput) {
+    startTransition(async () => {
+      const { error: signUpError } = await signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+
+      if (signUpError) {
+        form.setError("root", {
+          message: signUpError.message ?? "Registration failed.",
+        });
+        return;
+      }
+
+      const { error: otpError } = await emailOtp.sendVerificationOtp({
+        email: data.email,
+        type: "email-verification",
+      });
+
+      if (otpError) {
+        form.setError("root", {
+          message: otpError.message ?? "Failed to send verification email.",
+        });
+        return;
+      }
+
+      router.push(
+        `/verify-otp?email=${encodeURIComponent(data.email)}&flow=register`,
+      );
+    });
+  }
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -109,11 +145,9 @@ export default function SignUpForm() {
         <Button
           type="submit"
           className="h-11 w-full rounded-xl"
-          disabled={form.formState.isSubmitting}
+          disabled={isPending}
         >
-          {form.formState.isSubmitting
-            ? "Creating account..."
-            : "Create account"}
+          {isPending ? "Creating account..." : "Create account"}
         </Button>
       </FieldGroup>
     </form>
