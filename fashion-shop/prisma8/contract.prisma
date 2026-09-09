@@ -1,0 +1,198 @@
+// use prisma-next
+// Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
+
+namespace public {
+  model User {
+    id             String          @id(map: "user_pkey")
+    name           String
+    email          String
+    emailVerified  Boolean         @default(false)
+    role           String          @default("USER")
+    isFrozen       Boolean         @default(false)
+    image          String?
+    createdAt      Timestamp(3)    @default(now())
+    updatedAt      Timestamp(3)
+    productToUsers ProductToUser[]
+    accounts       Account[]
+    cartItems      CartItem[]
+    orders         Order[]
+    sessions       Session[]
+
+    @@index([email], map: "user_email_key", unique: true)
+    @@map("user")
+  }
+
+  model Account {
+    id                    String        @id(map: "account_pkey")
+    accountId             String
+    providerId            String
+    userId                String
+    accessToken           String?
+    refreshToken          String?
+    idToken               String?
+    accessTokenExpiresAt  Timestamp(3)?
+    refreshTokenExpiresAt Timestamp(3)?
+    scope                 String?
+    password              String?
+    createdAt             Timestamp(3)  @default(now())
+    updatedAt             Timestamp(3)
+    user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "account_userId_fkey")
+
+    @@index([userId], map: "account_userId_idx")
+    @@map("account")
+  }
+
+  model Product {
+    id              String            @id(map: "product_pkey")
+    name            String
+    slug            String
+    description     String?
+    sku             String?
+    price           Numeric(10, 2)
+    category        pg.enum(Category)
+    imageUrl        String
+    isActive        Boolean           @default(true)
+    createdAt       Timestamp(3)      @default(now())
+    updatedAt       Timestamp(3)
+    productToUsers  ProductToUser[]
+    productVariants ProductVariant[]
+
+    @@index([slug], map: "product_slug_key", unique: true)
+    @@map("product")
+  }
+
+  model ProductVariant {
+    id         String      @id(map: "product_variant_pkey")
+    productId  String
+    size       String
+    color      String
+    stock      Int         @default(0)
+    imageUrl   String
+    cartItems  CartItem[]
+    orderItems OrderItem[]
+    product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "product_variant_productId_fkey", index: false)
+
+    @@index([productId, size, color], map: "product_variant_productId_size_color_key", unique: true)
+    @@map("product_variant")
+  }
+
+  model CartItem {
+    userId    String
+    variantId String
+    quantity  Int            @default(1)
+    createdAt Timestamp(3)   @default(now())
+    updatedAt Timestamp(3)
+    user      User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "cart_item_userId_fkey")
+    variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "cart_item_variantId_fkey", index: false)
+
+    @@id([userId, variantId], map: "cart_item_pkey")
+    @@index([userId], map: "cart_item_userId_idx")
+    @@map("cart_item")
+  }
+
+  model Order {
+    id            String                 @id(map: "order_pkey")
+    userId        String
+    total         Numeric(10, 2)
+    status        pg.enum(OrderStatus)   @default("PENDING")
+    paymentMethod pg.enum(PaymentMethod) @default("CASH_ON_DELIVERY")
+    address       String
+    contactNumber String
+    createdAt     Timestamp(3)           @default(now())
+    updatedAt     Timestamp(3)
+    orderItems    OrderItem[]
+    user          User                   @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "order_userId_fkey", index: false)
+
+    @@map("order")
+  }
+
+  model OrderItem {
+    orderId     String
+    variantId   String
+    quantity    Int
+    unitPrice   Numeric(10, 2)
+    productName String
+    size        String
+    color       String
+    order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "order_item_orderId_fkey")
+    variant     ProductVariant @relation(fields: [variantId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "order_item_variantId_fkey", index: false)
+
+    @@id([orderId, variantId], map: "order_item_pkey")
+    @@index([orderId], map: "order_item_orderId_idx")
+    @@map("order_item")
+  }
+
+  model PendingRegistration {
+    email        String       @id(map: "pending_registration_pkey")
+    name         String
+    passwordHash String
+    expiresAt    Timestamp(3)
+    createdAt    Timestamp(3) @default(now())
+    updatedAt    Timestamp(3)
+
+    @@index([expiresAt], map: "pending_registration_expiresAt_idx")
+    @@map("pending_registration")
+  }
+
+  model ProductToUser {
+    a       String  @map("A")
+    b       String  @map("B")
+    product Product @relation(fields: [a], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "_ProductToUser_A_fkey", index: false)
+    user    User    @relation(fields: [b], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "_ProductToUser_B_fkey")
+
+    @@id([a, b], map: "_ProductToUser_AB_pkey")
+    @@index([b], map: "_ProductToUser_B_index")
+    @@map("_ProductToUser")
+  }
+
+  model Session {
+    id        String       @id(map: "session_pkey")
+    expiresAt Timestamp(3)
+    token     String
+    createdAt Timestamp(3) @default(now())
+    updatedAt Timestamp(3)
+    ipAddress String?
+    userAgent String?
+    userId    String
+    user      User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "session_userId_fkey")
+
+    @@index([token], map: "session_token_key", unique: true)
+    @@index([userId], map: "session_userId_idx")
+    @@map("session")
+  }
+
+  model Verification {
+    id         String       @id(map: "verification_pkey")
+    identifier String
+    value      String
+    expiresAt  Timestamp(3)
+    createdAt  Timestamp(3) @default(now())
+    updatedAt  Timestamp(3)
+
+    @@index([identifier], map: "verification_identifier_idx")
+    @@map("verification")
+  }
+
+  native_enum Category {
+    MEN = "MEN"
+    WOMEN = "WOMEN"
+    TEENS = "TEENS"
+    CHILD = "CHILD"
+    KIDS = "KIDS"
+    ACCESSORIES = "ACCESSORIES"
+  }
+
+  native_enum OrderStatus {
+    PENDING = "PENDING"
+    CONFIRMED = "CONFIRMED"
+    SHIPPED = "SHIPPED"
+    DELIVERED = "DELIVERED"
+    CANCELLED = "CANCELLED"
+  }
+
+  native_enum PaymentMethod {
+    CREDIT_CARD = "CREDIT_CARD"
+    PAYPAL = "PAYPAL"
+    CASH_ON_DELIVERY = "CASH_ON_DELIVERY"
+  }
+}

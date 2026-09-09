@@ -1,0 +1,44 @@
+[
+  {
+    "id": "column.public.product.sku",
+    "label": "Add column \"sku\" to \"product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sku",
+        "table": "product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sku\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "product",
+          "sku"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sku\"",
+        "sql": "ALTER TABLE \"public\".\"product\" ADD COLUMN \"sku\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sku\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "product",
+          "sku"
+        ]
+      }
+    ]
+  }
+]
