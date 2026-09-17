@@ -10,8 +10,8 @@ namespace public {
     role           String          @default("USER")
     isFrozen       Boolean         @default(false)
     image          String?
-    createdAt      Timestamp(3)    @default(now())
-    updatedAt      Timestamp(3)
+    createdAt      temporal.createdAt()
+    updatedAt      temporal.updatedAt()
     productToUsers ProductToUser[]
     accounts       Account[]
     cartItems      CartItem[]
@@ -34,8 +34,8 @@ namespace public {
     refreshTokenExpiresAt Timestamp(3)?
     scope                 String?
     password              String?
-    createdAt             Timestamp(3)  @default(now())
-    updatedAt             Timestamp(3)
+    createdAt             temporal.createdAt()
+    updatedAt             temporal.updatedAt()
     user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "account_userId_fkey")
 
     @@index([userId], map: "account_userId_idx")
@@ -43,7 +43,7 @@ namespace public {
   }
 
   model Product {
-    id              String            @id(map: "product_pkey")
+    id              String            @id(map: "product_pkey") @default(cuid(2))
     name            String
     slug            String
     description     String?
@@ -52,8 +52,8 @@ namespace public {
     category        pg.enum(Category)
     imageUrl        String
     isActive        Boolean           @default(true)
-    createdAt       Timestamp(3)      @default(now())
-    updatedAt       Timestamp(3)
+    createdAt       temporal.createdAt()
+    updatedAt       temporal.updatedAt()
     productToUsers  ProductToUser[]
     productVariants ProductVariant[]
 
@@ -62,7 +62,7 @@ namespace public {
   }
 
   model ProductVariant {
-    id         String      @id(map: "product_variant_pkey")
+    id         String      @id(map: "product_variant_pkey") @default(cuid(2))
     productId  String
     size       String
     color      String
@@ -80,8 +80,8 @@ namespace public {
     userId    String
     variantId String
     quantity  Int            @default(1)
-    createdAt Timestamp(3)   @default(now())
-    updatedAt Timestamp(3)
+    createdAt temporal.createdAt()
+    updatedAt temporal.updatedAt()
     user      User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "cart_item_userId_fkey")
     variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "cart_item_variantId_fkey", index: false)
 
@@ -91,15 +91,15 @@ namespace public {
   }
 
   model Order {
-    id            String                 @id(map: "order_pkey")
+    id            String                 @id(map: "order_pkey") @default(cuid(2))
     userId        String
     total         Numeric(10, 2)
     status        pg.enum(OrderStatus)   @default("PENDING")
     paymentMethod pg.enum(PaymentMethod) @default("CASH_ON_DELIVERY")
     address       String
     contactNumber String
-    createdAt     Timestamp(3)           @default(now())
-    updatedAt     Timestamp(3)
+    createdAt     temporal.createdAt()
+    updatedAt     temporal.updatedAt()
     orderItems    OrderItem[]
     user          User                   @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "order_userId_fkey", index: false)
 
@@ -127,8 +127,8 @@ namespace public {
     name         String
     passwordHash String
     expiresAt    Timestamp(3)
-    createdAt    Timestamp(3) @default(now())
-    updatedAt    Timestamp(3)
+    createdAt    temporal.createdAt()
+    updatedAt    temporal.updatedAt()
 
     @@index([expiresAt], map: "pending_registration_expiresAt_idx")
     @@map("pending_registration")
@@ -149,8 +149,8 @@ namespace public {
     id        String       @id(map: "session_pkey")
     expiresAt Timestamp(3)
     token     String
-    createdAt Timestamp(3) @default(now())
-    updatedAt Timestamp(3)
+    createdAt temporal.createdAt()
+    updatedAt temporal.updatedAt()
     ipAddress String?
     userAgent String?
     userId    String
@@ -166,8 +166,8 @@ namespace public {
     identifier String
     value      String
     expiresAt  Timestamp(3)
-    createdAt  Timestamp(3) @default(now())
-    updatedAt  Timestamp(3)
+    createdAt  temporal.createdAt()
+    updatedAt  temporal.updatedAt()
 
     @@index([identifier], map: "verification_identifier_idx")
     @@map("verification")

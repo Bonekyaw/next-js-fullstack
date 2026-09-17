@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { type RegisterInput, registerSchema } from "@/lib/validations/auth";
 import { signUp, emailOtp } from "@/lib/auth-client";
+import { registerUser } from "@/app/actions/auth";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -32,30 +33,12 @@ export default function SignUpForm() {
 
   function onSubmit(data: RegisterInput) {
     startTransition(async () => {
-      const { error: signUpError } = await signUp.email({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      });
+      // const result = await registerUser(data);
 
-      if (signUpError) {
-        form.setError("root", {
-          message: signUpError.message ?? "Registration failed.",
-        });
-        return;
-      }
-
-      const { error: otpError } = await emailOtp.sendVerificationOtp({
-        email: data.email,
-        type: "email-verification",
-      });
-
-      if (otpError) {
-        form.setError("root", {
-          message: otpError.message ?? "Failed to send verification email.",
-        });
-        return;
-      }
+      // if (!result.success) {
+      //   form.setError("root", { message: "Failed to create account" });
+      //   return;
+      // }
 
       router.push(
         `/verify-otp?email=${encodeURIComponent(data.email)}&flow=register`,
