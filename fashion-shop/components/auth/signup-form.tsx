@@ -33,12 +33,30 @@ export default function SignUpForm() {
 
   function onSubmit(data: RegisterInput) {
     startTransition(async () => {
-      // const result = await registerUser(data);
+      const result = await registerUser(data);
 
-      // if (!result.success) {
-      //   form.setError("root", { message: "Failed to create account" });
-      //   return;
-      // }
+      if (!result.success) {
+        if (result.code === "ACCOUNT_FROZEN") {
+          router.push("/login/frozen");
+          return;
+        }
+
+        if (result.fieldErrors) {
+          Object.entries(result.fieldErrors).forEach(([field, errors]) => {
+            if (errors && errors.length > 0) {
+              form.setError(field as keyof RegisterInput, {
+                message: errors.join(", "),
+              });
+            }
+          });
+        }
+
+        if (result.error) {
+          form.setError("root", { message: result.error });
+        }
+
+        return;
+      }
 
       router.push(
         `/verify-otp?email=${encodeURIComponent(data.email)}&flow=register`,

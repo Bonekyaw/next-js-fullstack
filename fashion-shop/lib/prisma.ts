@@ -8,6 +8,7 @@
 
 // export const prisma = new PrismaClient({ adapter });
 
+import "temporal-polyfill/full/global"; // must be first
 import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import postgres from "@prisma/orm-postgres/runtime";

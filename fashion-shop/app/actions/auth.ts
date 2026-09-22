@@ -7,6 +7,9 @@ import { APIError } from "better-auth/api";
 import { RegisterInput, registerSchema } from "@/lib/validations/auth";
 import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { ErrorCodes } from "@/lib/error_code";
+import { isAdminRole } from "@/lib/auth/role";
+import { upsertPendingRegistration } from "@/lib/auth/pending-registration";
 
 export async function registerUser(data: RegisterInput) {
   const parsed = registerSchema.safeParse(data);
@@ -33,36 +36,46 @@ export async function registerUser(data: RegisterInput) {
   if (existingUser && existingUser?.isFrozen) {
     return {
       success: false,
-      error:
-        "This account has been frozen. Please contact support for assistance.",
-      code: "ACCOUNT_FROZEN",
+      error: ErrorCodes.ACCOUNT_FROZEN.message,
+      code: ErrorCodes.ACCOUNT_FROZEN.code,
     };
   }
 
-  if (existingUser && existingUser?.role === "ADMIN") {
+  if (existingUser && isAdminRole(existingUser.role)) {
     return {
       success: false,
-      error: "Admin accounts must sign in through the admin portal.",
-      code: "ADMIN_ACCOUNT",
+      error: ErrorCodes.ADMIN_ACCOUNT.message,
+      code: ErrorCodes.ADMIN_ACCOUNT.code,
     };
   }
 
   if (existingUser && existingUser?.emailVerified) {
     return {
       success: false,
-      error:
-        "An account with this email already exists. Please sign in instead.",
-      code: "EMAIL_ALREADY_EXISTS",
+      error: ErrorCodes.EMAIL_ALREADY_EXISTS.message,
+      code: ErrorCodes.EMAIL_ALREADY_EXISTS.code,
     };
   }
 
   if (existingUser && !existingUser?.emailVerified) {
-    // We will fix the current issue
+    try {
+      await upsertPendingRegistration(normalizedEmail, name, password);
+      await auth.api.sendVerificationOTP({
+        body: {
+          email: normalizedEmail,
+          type: "email-verification",
+        },
+        headers: await headers(),
+      });
+    } catch {
+      return {
+        success: false,
+        error: "Failed to create pending registration. Please try again later.",
+      };
+    }
     return {
-      success: false,
-      error:
-        "An account with this email already exists but is not verified. Please check your email for the verification link or request a new one.",
-      code: "EMAIL_NOT_VERIFIED",
+      success: true,
+      data: { email: normalizedEmail, resumed: true },
     };
   }
 
