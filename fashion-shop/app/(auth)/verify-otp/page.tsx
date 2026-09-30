@@ -1,3 +1,5 @@
+import VerifyOtpForm from "@/components/auth/verify-otp-form";
+
 export default function verifyOtp() {
-  return <div>Verify OTP</div>;
+  return <VerifyOtpForm />;
 }
