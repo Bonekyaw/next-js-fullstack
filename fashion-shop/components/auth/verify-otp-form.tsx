@@ -24,6 +24,7 @@ import {
 import { OtpInput, otpSchema } from "@/lib/validations/auth";
 import { sanitizeCallbackUrl } from "@/lib/auth/safe-redirect";
 import AuthFormPanel from "./auth-form-panel";
+import { completeRegistrationVerification } from "@/app/actions/auth";
 
 function VerifyOtpFormInner() {
   const router = useRouter();
@@ -46,10 +47,29 @@ function VerifyOtpFormInner() {
     startTransition(async () => {
       if (flow === "login") {
         // Handle login flow
+        return;
       } else {
         // Handle registration flow
+        const result = await completeRegistrationVerification(data);
+        if (!result.success) {
+          if (result.fieldErrors) {
+            Object.entries(result.fieldErrors).forEach(([field, errors]) => {
+              if (errors && errors.length > 0) {
+                form.setError(field as keyof OtpInput, {
+                  message: errors.join(", "),
+                });
+              }
+            });
+          }
+
+          if (result.error) {
+            form.setError("root", { message: result.error });
+          }
+          return;
+        }
       }
-      return;
+      router.push(callbackUrl);
+      router.refresh();
     });
   }
 

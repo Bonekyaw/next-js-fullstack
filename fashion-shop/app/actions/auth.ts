@@ -4,12 +4,20 @@ import z from "zod";
 import { headers } from "next/headers";
 import { APIError } from "better-auth/api";
 
-import { RegisterInput, registerSchema } from "@/lib/validations/auth";
+import {
+  RegisterInput,
+  registerSchema,
+  otpSchema,
+  OtpInput,
+} from "@/lib/validations/auth";
 import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { ErrorCodes } from "@/lib/error_code";
 import { isAdminRole } from "@/lib/auth/role";
-import { upsertPendingRegistration } from "@/lib/auth/pending-registration";
+import {
+  applyPendingRegistration,
+  upsertPendingRegistration,
+} from "@/lib/auth/pending-registration";
 
 export async function registerUser(data: RegisterInput) {
   const parsed = registerSchema.safeParse(data);
@@ -113,4 +121,60 @@ export async function registerUser(data: RegisterInput) {
   }
 
   return { success: true, data: { email: normalizedEmail } };
+}
+
+export async function completeRegistrationVerification(input: OtpInput) {
+  const parsed = otpSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
+    };
+  }
+
+  const { email, otp } = parsed.data;
+  const normalizedEmail = email.toLowerCase();
+
+  try {
+    await auth.api.verifyEmailOTP({
+      body: {
+        email: normalizedEmail,
+        otp,
+      },
+      headers: await headers(),
+    });
+  } catch (error) {
+    const message =
+      error instanceof APIError
+        ? error.message
+        : "Failed to verify OTP. Please try again later.";
+
+    if (message.toLocaleLowerCase().includes("invalid otp")) {
+      return {
+        success: false,
+        error: "Invalid OTP. Please check the code and try again.",
+      };
+    }
+
+    if (message.toLocaleLowerCase().includes("expired")) {
+      return {
+        success: false,
+        error: "OTP has expired. Please request a new code.",
+      };
+    }
+
+    if (message.toLocaleLowerCase().includes("too many attempts")) {
+      return {
+        success: false,
+        error: "Too many failed attempts. Please request a new code.",
+      };
+    }
+
+    return { success: false, error: message };
+  }
+
+  await applyPendingRegistration(normalizedEmail);
+
+  return { success: true };
 }
