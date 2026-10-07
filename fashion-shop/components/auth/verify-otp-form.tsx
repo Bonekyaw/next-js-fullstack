@@ -11,7 +11,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +24,11 @@ import {
 import { OtpInput, otpSchema } from "@/lib/validations/auth";
 import { sanitizeCallbackUrl } from "@/lib/auth/safe-redirect";
 import AuthFormPanel from "./auth-form-panel";
-import { completeRegistrationVerification } from "@/app/actions/auth";
+import {
+  completeRegistrationVerification,
+  resendRegistrationVerification,
+} from "@/app/actions/auth";
+import { ErrorCodes } from "@/lib/error_code";
 
 function VerifyOtpFormInner() {
   const router = useRouter();
@@ -32,8 +36,11 @@ function VerifyOtpFormInner() {
   const email = searchParams.get("email") ?? "";
   const flow = searchParams.get("flow") ?? "";
   const resumed = searchParams.get("resumed") === "true";
-  const callbackUrl = sanitizeCallbackUrl(searchParams.get("callbackUrl"));
+  const callbackUrl = sanitizeCallbackUrl(
+    searchParams.get("callbackUrl") || "/",
+  );
   const [isPending, startTransition] = useTransition();
+  const [resendMessage, setResendMessage] = useState<String | null>(null);
 
   const form = useForm<OtpInput>({
     resolver: zodResolver(otpSchema),
@@ -68,14 +75,40 @@ function VerifyOtpFormInner() {
           return;
         }
       }
-      router.push(callbackUrl);
-      router.refresh();
+      router.replace(callbackUrl);
     });
   }
 
   function handleResendCode() {
     startTransition(async () => {
-      return;
+      setResendMessage(null);
+      if (flow === "login") {
+        // Handle resend code for login flow
+        return;
+      } else {
+        const result = await resendRegistrationVerification({ email });
+        if (!result.success) {
+          if (result.code === ErrorCodes.ACCOUNT_FROZEN.code) {
+            form.setError("root", {
+              message:
+                "Your account is frozen. Please contact support for assistance.",
+            });
+            return;
+          }
+
+          form.setError("root", {
+            message: result.error ?? "Failed to resend verification email.",
+          });
+          return;
+        }
+
+        form.clearErrors("root");
+        form.setValue("otp", "");
+        setResendMessage(
+          result.message ??
+            "A new verification code has been sent to your email address.",
+        );
+      }
     });
   }
 
@@ -124,6 +157,13 @@ function VerifyOtpFormInner() {
           {form.formState.errors.root && (
             <FieldError>{form.formState.errors.root?.message}</FieldError>
           )}
+
+          {resendMessage && (
+            <div className="border-primary/20 bg-primary/5 rounded-xl border px-4 py-3 text-sm text-green-600">
+              {resendMessage}
+            </div>
+          )}
+
           <Button
             type="submit"
             className="h-11 w-full rounded-xl sm:w-auto"
@@ -138,7 +178,7 @@ function VerifyOtpFormInner() {
             disabled={isPending}
             onClick={handleResendCode}
           >
-            {isPending ? "Resending..." : "Resend code"}
+            Resend code
           </Button>
         </FieldGroup>
       </form>

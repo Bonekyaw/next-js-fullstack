@@ -9,6 +9,7 @@ import {
   registerSchema,
   otpSchema,
   OtpInput,
+  emailSchema,
 } from "@/lib/validations/auth";
 import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
@@ -177,4 +178,77 @@ export async function completeRegistrationVerification(input: OtpInput) {
   await applyPendingRegistration(normalizedEmail);
 
   return { success: true };
+}
+
+export async function resendRegistrationVerification(input: { email: string }) {
+  const parsed = emailSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
+    };
+  }
+
+  const normalizedEmail = input.email.toLowerCase();
+
+  const existingUser = await db.orm.public.User.select(
+    "emailVerified",
+    "role",
+    "isFrozen",
+  )
+    .where({ email: normalizedEmail })
+    .first();
+
+  if (!existingUser) {
+    return {
+      success: false,
+      error: "No account found with this email. Please register first.",
+    };
+  }
+
+  if (existingUser?.isFrozen) {
+    return {
+      success: false,
+      error: ErrorCodes.ACCOUNT_FROZEN.message,
+      code: ErrorCodes.ACCOUNT_FROZEN.code,
+    };
+  }
+
+  if (isAdminRole(existingUser.role)) {
+    return {
+      success: false,
+      error: ErrorCodes.ADMIN_ACCOUNT.message,
+      code: ErrorCodes.ADMIN_ACCOUNT.code,
+    };
+  }
+
+  if (existingUser?.emailVerified) {
+    return {
+      success: false,
+      error: "This account is already verified. Please log in.",
+    };
+  }
+
+  try {
+    await auth.api.sendVerificationOTP({
+      body: {
+        email: normalizedEmail,
+        type: "email-verification",
+      },
+      headers: await headers(),
+    });
+  } catch (error) {
+    const message =
+      error instanceof APIError
+        ? error.message
+        : "Failed to resend verification email. Please try again later.";
+    return { success: false, error: message };
+  }
+
+  return {
+    success: true,
+    data: { email: normalizedEmail },
+    message: "Verification email resent successfully.",
+  };
 }

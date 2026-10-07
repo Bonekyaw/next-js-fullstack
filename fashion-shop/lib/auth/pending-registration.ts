@@ -26,7 +26,10 @@ export async function applyPendingRegistration(
 
   if (
     !pendingRegistration ||
-    pendingRegistration.expiresAt < Temporal.Now.plainDateTimeISO()
+    Temporal.PlainDateTime.compare(
+      pendingRegistration.expiresAt,
+      Temporal.Now.plainDateTimeISO(),
+    ) < 0
   ) {
     if (pendingRegistration) {
       await db.orm.public.PendingRegistration.where({ email }).delete();
