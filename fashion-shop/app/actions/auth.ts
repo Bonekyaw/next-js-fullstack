@@ -6,10 +6,12 @@ import { APIError } from "better-auth/api";
 
 import {
   RegisterInput,
+  LoginInput,
   registerSchema,
   otpSchema,
   OtpInput,
   emailSchema,
+  loginSchema,
 } from "@/lib/validations/auth";
 import { db } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
@@ -251,4 +253,89 @@ export async function resendRegistrationVerification(input: { email: string }) {
     data: { email: normalizedEmail },
     message: "Verification email resent successfully.",
   };
+}
+
+export async function validateLoginCredentials(input: LoginInput) {
+  const parsed = loginSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
+    };
+  }
+
+  const { email, password } = parsed.data;
+
+  const normalizedEmail = email.toLowerCase();
+
+  const existingUser = await db.orm.public.User.select("role", "isFrozen")
+    .where({ email: normalizedEmail })
+    .first();
+
+  if (!existingUser) {
+    return {
+      success: false,
+      error: "No account found with this email. Please register first.",
+    };
+  }
+
+  if (existingUser?.isFrozen) {
+    return {
+      success: false,
+      error: ErrorCodes.ACCOUNT_FROZEN.message,
+      code: ErrorCodes.ACCOUNT_FROZEN.code,
+    };
+  }
+
+  if (isAdminRole(existingUser.role)) {
+    return {
+      success: false,
+      error: ErrorCodes.ADMIN_ACCOUNT.message,
+      code: ErrorCodes.ADMIN_ACCOUNT.code,
+    };
+  }
+
+  try {
+    const signInResponse = await auth.api.signInEmail({
+      body: {
+        email: normalizedEmail,
+        password,
+      },
+      headers: await headers(),
+    });
+
+    if (!signInResponse) {
+      return {
+        success: false,
+        error:
+          "Invalid email or password. Please check your credentials and try again.",
+      };
+    }
+
+    await auth.api.signOut({
+      headers: await headers(),
+    });
+
+    await auth.api.sendVerificationOTP({
+      body: {
+        email: normalizedEmail,
+        type: "sign-in",
+      },
+      headers: await headers(),
+    });
+
+    return {
+      success: true,
+      data: { email: normalizedEmail },
+      message:
+        "Login credentials validated successfully. Please check your email for the verification code.",
+    };
+  } catch (error) {
+    const message =
+      error instanceof APIError
+        ? error.message
+        : "Failed to validate login credentials. Please try again later.";
+    return { success: false, error: message };
+  }
 }

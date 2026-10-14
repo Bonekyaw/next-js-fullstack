@@ -44,6 +44,7 @@ export const auth = betterAuth({
       async sendVerificationOTP({ email, otp, type }) {
         const subjects: Record<string, string> = {
           "email-verification": "Verify Your Email",
+          "sign-in": "Your Sign-In Code",
           forget_password: "Reset Your Password",
         };
         await sendEmail({

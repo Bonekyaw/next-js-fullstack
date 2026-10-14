@@ -29,6 +29,7 @@ import {
   resendRegistrationVerification,
 } from "@/app/actions/auth";
 import { ErrorCodes } from "@/lib/error_code";
+import { emailOtp, signIn } from "@/lib/auth-client";
 
 function VerifyOtpFormInner() {
   const router = useRouter();
@@ -53,8 +54,17 @@ function VerifyOtpFormInner() {
   function onSubmit(data: OtpInput) {
     startTransition(async () => {
       if (flow === "login") {
-        // Handle login flow
-        return;
+        const { error } = await signIn.emailOtp({
+          email: data.email,
+          otp: data.otp,
+        });
+
+        if (error) {
+          form.setError("root", {
+            message: error.message || "Failed to verify OTP. Please try again.",
+          });
+          return;
+        }
       } else {
         // Handle registration flow
         const result = await completeRegistrationVerification(data);
@@ -83,7 +93,23 @@ function VerifyOtpFormInner() {
     startTransition(async () => {
       setResendMessage(null);
       if (flow === "login") {
-        // Handle resend code for login flow
+        const { error } = await emailOtp.sendVerificationOtp({
+          email,
+          type: "sign-in",
+        });
+
+        if (error) {
+          form.setError("root", {
+            message: error.message || "Failed to resend verification code.",
+          });
+          return;
+        }
+
+        form.clearErrors("root");
+        form.setValue("otp", "");
+        setResendMessage(
+          "A new verification code has been sent to your email address.",
+        );
         return;
       } else {
         const result = await resendRegistrationVerification({ email });

@@ -18,6 +18,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker";
+import { validateLoginCredentials } from "@/app/actions/auth";
 
 function LoginFormInner() {
   const router = useRouter();
@@ -32,6 +33,46 @@ function LoginFormInner() {
   function onSubmit(values: LoginInput) {
     startTransition(async () => {
       // Validate login credentials
+      const result = await validateLoginCredentials(values);
+
+      if (!result.success) {
+        if (
+          result.code === "ACCOUNT_FROZEN" ||
+          result.code === "ADMIN_ACCOUNT"
+        ) {
+          form.setError("root", {
+            type: "manual",
+            message: result.error,
+          });
+        } else {
+          form.setError("email", {
+            type: "manual",
+            message:
+              result.fieldErrors?.email?.[0] || "Invalid email or password",
+          });
+          form.setError("password", {
+            type: "manual",
+            message:
+              result.fieldErrors?.password?.[0] || "Invalid email or password",
+          });
+        }
+
+        if (result.error) {
+          form.setError("root", {
+            message: result.error,
+          });
+        }
+        return;
+      }
+
+      const verifyOtpUrl = new URL("/verify-otp", window.location.origin);
+      verifyOtpUrl.searchParams.set("email", result.data!.email);
+      verifyOtpUrl.searchParams.set("flow", "login");
+      if (callbackUrl !== "/") {
+        verifyOtpUrl.searchParams.set("callbackUrl", callbackUrl);
+      }
+
+      router.push(verifyOtpUrl.toString());
     });
   }
 
