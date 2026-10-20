@@ -1,22 +1,43 @@
-import Image from "next/image";
+import { Suspense } from "react";
 
-export default function Home() {
+import CategoryFilter from "@/components/products/category-filter";
+import { ProductGridSkeleton } from "@/components/products/product-grid-skeleton";
+import { CategoryValue } from "@/lib/product-utils";
+import ProductGrid from "@/components/products/product-grid";
+
+type ProductGridSectionProps = {
+  searchParams: Promise<{
+    category?: string;
+  }>;
+};
+
+async function ProductGridSection({ searchParams }: ProductGridSectionProps) {
+  const { category } = await searchParams;
+  const validCategories = ["MEN", "WOMEN", "TEENS", "CHILD", "KIDS"] as const;
+  const selecetedCategory = validCategories.includes(category as CategoryValue)
+    ? (category as CategoryValue)
+    : undefined;
+
+  return <ProductGrid category={selecetedCategory} />;
+}
+
+export default function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <p className="text-2xl text-zinc-700 dark:text-zinc-400">
-          {" "}
-          Hello Shop World!{" "}
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">Shop Collection</h1>
+        <p className="text-muted-foreground">
+          Browse our latest fashion for Men, Women, Teens, Child, and Kids
         </p>
-      </main>
+      </div>
+      <CategoryFilter />
+      <Suspense fallback={<ProductGridSkeleton />}>
+        <ProductGridSection searchParams={searchParams} />
+      </Suspense>
     </div>
   );
 }

@@ -5,3 +5,5 @@ export const CATEGORIES = [
   { value: "CHILD", label: "Child" },
   { value: "KIDS", label: "Kids" },
 ] as const;
+
+export type CategoryValue = (typeof CATEGORIES)[number]["value"];

@@ -47,9 +47,11 @@ async function ShopShell({ children }: { children: React.ReactNode }) {
   // We will use this session for Favourite Provider later
 
   return (
-    <div>
+    <div className="flex min-h-screen flex-col">
       <ShopHeader />
-      {children}
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
+        {children}
+      </main>
     </div>
   );
 }
