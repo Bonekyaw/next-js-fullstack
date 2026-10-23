@@ -1,12 +1,13 @@
 import { db } from "../prisma";
 import { CategoryValue } from "../product-utils";
+import { ProductsPageResult } from "../product-type";
 import { serialize } from "../serialize";
 
 export async function queryProductsPage(
   category: CategoryValue | undefined,
   cursor: string | undefined,
   limit: number,
-) {
+): Promise<ProductsPageResult> {
   let query = db.orm.public.Product.where({ isActive: true });
 
   if (category) {
@@ -40,7 +41,7 @@ export async function queryProductsPage(
     items,
     nextCursor: hasMore ? items[items.length - 1].id : null,
     hasMore,
-  });
+  }) as unknown as ProductsPageResult;
 }
 
 // 30, 29, 28, 27, 26.   ( cusror = 26 )

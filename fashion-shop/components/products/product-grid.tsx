@@ -1,4 +1,6 @@
+import { getProductPage } from "@/lib/data/products";
 import { CategoryValue } from "@/lib/product-utils";
+import ProductInfinteList from "./product-infinite-list";
 
 type ProductGridProps = {
   category?: CategoryValue;
@@ -6,9 +8,17 @@ type ProductGridProps = {
 
 async function ProductGrid({ category }: ProductGridProps) {
   // Fetch products from server side
-  // const page = await getProductPage( category, undefined , 12);
+  const page = await getProductPage(category, undefined, 12);
 
-  return <div>ProductGrid via Server + Client products</div>;
+  return (
+    <ProductInfinteList
+      key={category ?? "ALL"}
+      category={category}
+      initialItems={page.items}
+      initialNextCursor={page.nextCursor}
+      initialHasMore={page.hasMore}
+    />
+  );
 }
 
 export default ProductGrid;
