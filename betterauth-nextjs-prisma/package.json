@@ -1,0 +1,39 @@
+{
+  "name": "betterauth-nextjs-prisma",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "prisma7:generate": "prisma7 generate",
+    "prisma7:migrate": "prisma7 migrate dev"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "@prisma/orm-postgres": "^8.0.0-rc.21",
+    "better-auth": "^1.7.14",
+    "dotenv": "^18.0.9",
+    "next": "16.4.3",
+    "pg": "^8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@prisma/cli": "^8.0.0-rc.28",
+    "@prisma/prisma7": "^7.10.1",
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}
