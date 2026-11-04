@@ -1,6 +1,5 @@
 import { createAuthClient } from "better-auth/react";
 import { emailOTPClient } from "better-auth/client/plugins";
-import { nextCookies } from "better-auth/next-js";
 
 export const { signIn, signUp, useSession, emailOtp, signOut } =
   createAuthClient({
@@ -9,5 +8,5 @@ export const { signIn, signUp, useSession, emailOtp, signOut } =
     fetchOptions: {
       credentials: "include",
     },
-    plugins: [emailOTPClient(), nextCookies()],
+    plugins: [emailOTPClient()],
   });

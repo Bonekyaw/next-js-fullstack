@@ -4,6 +4,8 @@ import { connection } from "next/server";
 import { getSession } from "@/lib/session";
 import { Skeleton } from "@/components/ui/skeleton";
 import ShopHeader from "@/components/layout/shop-header";
+import { FavouriteProvider } from "@/components/providers/favourite-provider";
+import { getUserFavouriteIds } from "@/lib/data/favourites";
 
 function ShopLayoutFallback() {
   return (
@@ -43,16 +45,22 @@ function ShopLayoutFallback() {
 async function ShopShell({ children }: { children: React.ReactNode }) {
   await connection();
   const session = await getSession();
-  // You can use the session information here if needed
-  // We will use this session for Favourite Provider later
+  const favouriteIds = session
+    ? await getUserFavouriteIds(session.user.id)
+    : [];
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <ShopHeader />
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
-        {children}
-      </main>
-    </div>
+    <FavouriteProvider
+      key={session?.user?.id || "guest"}
+      initialFavouriteIds={favouriteIds}
+    >
+      <div className="flex min-h-screen flex-col">
+        <ShopHeader />
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
+          {children}
+        </main>
+      </div>
+    </FavouriteProvider>
   );
 }
 

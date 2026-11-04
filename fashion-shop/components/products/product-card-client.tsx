@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { formatPrice, getCategoryLabel } from "@/lib/product-utils";
+import FavouriteButton from "./favourite-button";
 
 type ProductCardClientProps = {
   product: ProductListItem;
@@ -33,6 +34,10 @@ function ProductCardClient({
             />
           </div>
         </Link>
+        <FavouriteButton
+          productId={product.id}
+          className="bg-background/80 absolute top-2 right-2 backdrop-blur-sm"
+        />
       </CardHeader>
       <CardContent className="flex flex-col gap-2 px-4">
         <div className="flex items-start justify-between gap-2">
