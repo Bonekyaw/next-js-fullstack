@@ -1,3 +1,5 @@
+import { useTransition } from "react";
+import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 
 function GoogleIcon() {
@@ -29,11 +31,25 @@ function GoogleIcon() {
 }
 
 function GoogleSignInButton() {
+  const [isPending, startTransition] = useTransition();
+
+  function handleGoogleSignIn() {
+    startTransition(async () => {
+      await signIn.social({
+        provider: "google",
+        callbackURL: "/",
+        // errorCallbackURL: "/login/frozen"
+      });
+    });
+  }
+
   return (
     <Button
       type="button"
       variant="outline"
       className="border-border/80 bg-background hover:bg-muted/40 h-11 w-full rounded-xl shadow-sm"
+      disabled={isPending}
+      onClick={handleGoogleSignIn}
     >
       <GoogleIcon />
       Sign in with Google
