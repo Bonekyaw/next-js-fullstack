@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build",
-    "postinstall": "prisma7 generate",
+    "vercel-build": "prisma7 generate && prisma contract emit && next build",
+    "postinstall": "prisma7 generate && prisma contract emit",
     "prisma7:generate": "prisma7 generate",
     "start": "next start",
     "lint": "eslint"
