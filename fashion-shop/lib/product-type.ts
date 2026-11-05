@@ -17,6 +17,15 @@ export type ProductListItem = {
   productVariants: ProductVariantListItem[];
 };
 
+export type productDetailItem = Omit<ProductListItem, "productVariants"> & {
+  description: string | null;
+  productVariants: Array<
+    ProductVariantListItem & {
+      imageUrl: string | null;
+    }
+  >;
+};
+
 export type ProductsPageResult = {
   items: ProductListItem[];
   nextCursor: string | null;

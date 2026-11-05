@@ -11,7 +11,7 @@ import { revalidateUserFavourites } from "@/lib/cache-tags";
 export async function toggleFavouriteAction(input: unknown) {
   const session = await getSession();
   if (!session) {
-    return { success: false, error: "authenticated" };
+    return { success: false, error: "unauthenticated" };
   }
 
   const parsed = toggleFavoriteSchema.safeParse(input);

@@ -1,6 +1,6 @@
 import { db } from "../prisma";
 import { CategoryValue } from "../product-utils";
-import { ProductsPageResult } from "../product-type";
+import { productDetailItem, ProductsPageResult } from "../product-type";
 import { serialize } from "../serialize";
 
 export async function queryProductsPage(
@@ -47,3 +47,13 @@ export async function queryProductsPage(
 // 30, 29, 28, 27, 26.   ( cusror = 26 )
 // 25, 24, 23, 22, 21 ( Prisma 7 , skip(1) , limit + 1 )
 // 25, 24, 23, 22, 21, 20 ( Prisma 8 , limit + 1) - Cursor = 21
+
+export async function queryProductDetail(slug: string) {
+  const product = await db.orm.public.Product.where({ slug, isActive: true })
+    .include("productVariants", (variant) =>
+      variant.select("id", "size", "color", "stock", "imageUrl"),
+    )
+    .first();
+
+  return serialize(product) as unknown as productDetailItem | null;
+}
